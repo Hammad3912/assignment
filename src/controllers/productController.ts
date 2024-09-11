@@ -26,9 +26,23 @@ export class ProductController {
 	}
 
 	// Get all products
-	async getAllProducts(req: Request, res: Response) {
+	async getAllProducts(req: any, res: any) {
 		try {
-			const products = await this.productRepository.find();
+			const user = req.user; // Assume this contains user info, including role and possibly userId
+			const isAdmin = user.role === UserRole.ADMIN;
+
+			let products;
+			if (isAdmin) {
+				// Admin can see all products
+				products = await this.productRepository.find();
+			} else {
+				// Partner can see only products owned by them
+				const userId = user.id; // Assuming `user.id` is the ID of the current user
+				products = await this.productRepository.find({
+					where: { owner: { id: userId } }, // Adjust based on your entity schema
+				});
+			}
+
 			return res.status(200).json(products);
 		} catch (error) {
 			return res.status(500).json({ message: 'Error fetching products', error });

@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import express from 'express';
+import cors from 'cors';
 import bodyParser from 'body-parser';
 import { connectDatabase } from './config/database';
 import swaggerJsdoc from 'swagger-jsdoc';
@@ -12,6 +13,15 @@ import { swaggerOptions } from './config/swaggerConfig'; // Import Swagger confi
 
 const app = express();
 app.use(bodyParser.json());
+
+// OR for more fine-tuned control, allow specific methods and credentials for every request
+app.use(
+	cors({
+		origin: '*', // Allows access from any origin
+		methods: 'GET,POST,PUT,DELETE', // Allows specified HTTP methods
+		credentials: true, // Include cookies in CORS requests
+	}),
+);
 
 // Swagger setup
 const swaggerSpec = swaggerJsdoc(swaggerOptions);

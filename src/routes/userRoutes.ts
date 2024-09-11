@@ -7,6 +7,8 @@ import { UserRole } from '../utils/enums';
 const userController = new UserController();
 const router = Router();
 
+router.get('/', authMiddleware, (req, res) => userController.getUsers(req, res));
+
 /**
  * @swagger
  * /api/users/signup:
@@ -103,6 +105,10 @@ router.post('/login', userController.login);
  */
 router.put('/:id', authMiddleware, roleMiddleware(UserRole.ADMIN, UserRole.PARTNER), (req, res) =>
 	userController.updateUser(req, res),
+);
+
+router.delete('/:id', authMiddleware, roleMiddleware(UserRole.ADMIN), (req, res) =>
+	userController.deleteUser(req, res),
 );
 
 export default router;
